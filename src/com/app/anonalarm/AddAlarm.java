@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -42,8 +43,9 @@ public class AddAlarm extends PreferenceActivity {
 		int snooze = prefs.getBoolean("preferences_snooze", true) ? 1:0;
 		String label = prefs.getString("preferences_label", "Alarm");
 		DownloadSound sound = new DownloadSound();
-		
-		String soundfile = sound.doInBackground("");
+		sound.execute("");
+		String soundfile = sound.getFilename();
+		Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getPath()+"/AnonAlarmData/",Toast.LENGTH_LONG).show();
 		AlarmItem ai = new AlarmItem(currentTimestamp, label,time,repeat,vibrate,volume,
 	    		filter,snooze,soundfile,enable);
 
