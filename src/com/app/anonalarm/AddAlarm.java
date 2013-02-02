@@ -17,6 +17,7 @@ public class AddAlarm extends PreferenceActivity {
 	}
 	public void onSaveClick(View v){
 		//save prefs
+		
 		finish();
         
 	}
