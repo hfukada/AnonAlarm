@@ -41,9 +41,10 @@ containing a value of this type.
         public static final int alarmlabel=0x7f090001;
         public static final int btnStart=0x7f090005;
         public static final int cancelbtn=0x7f090009;
+        public static final int delete_item=0x7f09000b;
         public static final int list2=0x7f090007;
-        public static final int menu_settings=0x7f09000a;
         public static final int recordinglabel=0x7f090004;
+        public static final int rename_item=0x7f09000a;
         public static final int savebtn=0x7f090008;
         public static final int soundbar=0x7f090006;
     }

@@ -9,7 +9,10 @@ import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
@@ -20,13 +23,22 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.ContextMenu;  
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;  
+import android.view.ContextMenu.ContextMenuInfo;
 
+//need to add check for rename
 public class RecordSide extends Activity{
 	private static final int RECORDER_BPP = 16;
 	private static final String AUDIO_RECORDER_FILE_EXT_WAV = ".wav";
@@ -65,6 +77,9 @@ public class RecordSide extends Activity{
 		lv=(ListView)findViewById(R.id.list2);
 		lv.setClickable(true);
 		lv.setItemsCanFocus(false);
+		
+		registerForContextMenu(lv);
+		
 		lv.setLongClickable(true);
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -75,10 +90,12 @@ public class RecordSide extends Activity{
 				playItem(file.getAbsolutePath() + "/"+listItem.toString());
 			}
 		});	
+		/*
 		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 				// TODO Auto-generated method stub
+				
 				Object listItem = lv.getItemAtPosition(position);
 				String filepath = Environment.getExternalStorageDirectory().getPath()+"/"+AUDIO_RECORDER_FOLDER+"/"+listItem.toString();
 				Log.d("deleting",filepath);
@@ -87,9 +104,11 @@ public class RecordSide extends Activity{
 				listItems.remove(listItem);
 				Toast.makeText(getApplicationContext(), "Deleted: "+listItem.toString(), Toast.LENGTH_SHORT).show();
 				adapter.notifyDataSetChanged();
+				
 				return true;
 			}
 		});
+		*/
 		adapter=new ArrayAdapter<String>(this,R.layout.recording,R.id.recordinglabel,listItems);
 		
 		lv.setAdapter(adapter);
@@ -98,10 +117,10 @@ public class RecordSide extends Activity{
 		
 		if(directory.listFiles()!= null){
 			for (File file : directory.listFiles()){
-				if (file.getName().contains("AnonRecording")){
+				//if (file.getName().contains("AnonRecording")){
 					listItems.add(file.getName());
 					num++;
-				}
+				//}
 			}
 		}else{
 			num = 0;
@@ -110,6 +129,99 @@ public class RecordSide extends Activity{
 		adapter.notifyDataSetChanged();
 		
 	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		// TODO Auto-generated method stub
+		super.onCreateContextMenu(menu, v, menuInfo);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.activity_main, menu);
+
+	}
+	
+	public boolean onContextItemSelected(MenuItem item)
+	{
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		
+		final Object listItem = lv.getItemAtPosition(info.position);
+		
+		String filepath = Environment.getExternalStorageDirectory().getPath()+"/"+AUDIO_RECORDER_FOLDER+"/"+listItem.toString();
+		final File file = new File(filepath);
+		
+		switch(item.getItemId())
+		{
+			case R.id.delete_item:
+				
+				Log.d("deleting",filepath);
+				AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+				alertDialog.setTitle("Delete item");
+				alertDialog.setMessage("Are you sure you want to delete this item?")
+				           .setCancelable(false)
+				           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+				        	@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+									file.delete();
+									listItems.remove(listItem);
+									Toast.makeText(getApplicationContext(), "Deleted: "+listItem.toString(), Toast.LENGTH_SHORT).show();
+									adapter.notifyDataSetChanged();
+								}
+				            })
+				            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO Auto-generated method stub
+									dialog.cancel();
+								}
+							});
+							
+				AlertDialog alertDialogShowing = alertDialog.create();
+				alertDialogShowing.show();
+				break;
+		   case R.id.rename_item:
+			    AlertDialog.Builder renameAlert = new AlertDialog.Builder(this);
+			    renameAlert.setTitle("Rename file");
+			    renameAlert.setMessage("Enter the new filename");
+			    final EditText userInput = new EditText(this);
+			    renameAlert.setView(userInput);
+			    
+			    	renameAlert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							
+						    String filepathNew = Environment.getExternalStorageDirectory().getPath()+"/"+AUDIO_RECORDER_FOLDER+"/"+userInput.getText().toString()+".wav";
+							final File fileNew = new File(filepathNew);
+							
+							//if(!fileNew.exists())
+							//{
+							
+							file.renameTo(fileNew);//new File(filepathNew));
+
+							Toast.makeText(getApplicationContext(), "Renamed: "+listItem.toString()+" to "+fileNew.getName(), Toast.LENGTH_SHORT).show();
+						    listItems.remove(listItem.toString());
+							listItems.add(userInput.getText().toString()+".wav");
+							adapter.notifyDataSetChanged();
+						}
+					})
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							dialog.cancel();
+						}
+					});
+			    renameAlert.show();
+		}
+		return true;
+	}
+	
+
 
 	private void setButtonHandlers() {
 		((Button)findViewById(R.id.btnStart)).setOnClickListener(btnClick);
