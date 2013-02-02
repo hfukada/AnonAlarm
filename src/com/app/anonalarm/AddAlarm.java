@@ -41,9 +41,11 @@ public class AddAlarm extends PreferenceActivity {
 		String filter = prefs.getString("preferences_filter", "");
 		int snooze = prefs.getBoolean("preferences_snooze", true) ? 1:0;
 		String label = prefs.getString("preferences_label", "Alarm");
-		String sound = "aSoundFile.mp3";
+		DownloadSound sound = new DownloadSound();
+		
+		String soundfile = sound.doInBackground("");
 		AlarmItem ai = new AlarmItem(currentTimestamp, label,time,repeat,vibrate,volume,
-	    		filter,snooze,sound,enable);
+	    		filter,snooze,soundfile,enable);
 
         AlarmDatabase db = new AlarmDatabase(this);
         db.addAlarmItem(ai);
@@ -66,9 +68,8 @@ public class AddAlarm extends PreferenceActivity {
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, 12345, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        //alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30*1000, pintent);
         alarm.set(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis()+1500, pi);
-		//finish();
+		finish();
         
 	}
 	public void onCancelClick(View v){

@@ -81,7 +81,6 @@ public class AlarmSide extends ListActivity {
 	          if (resultCode == RESULT_OK) {
 	              items = db.getAllAlarmItems();
 	              listItems.add(items.get(0));
-	              
 	              adapter.notifyDataSetChanged();
 	          }
 	    }
