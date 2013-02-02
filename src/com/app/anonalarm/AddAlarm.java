@@ -62,11 +62,12 @@ public class AddAlarm extends PreferenceActivity {
         cal.set(Calendar.MILLISECOND, cur_cal.get(Calendar.MILLISECOND));
         cal.set(Calendar.DATE, cur_cal.get(Calendar.DATE));
         cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
-        Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+
+        Intent intent = new Intent(this.getApplicationContext(), AlarmReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(this.getApplicationContext(), 0, intent, 0);
         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         //alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30*1000, pintent);
-        alarm.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pintent);
+        alarm.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
 		finish();
         
 	}
