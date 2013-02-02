@@ -103,7 +103,10 @@ public class RecordSide extends Activity{
 					num++;
 				}
 			}
+		}else{
+			num = 0;
 		}
+		
 		adapter.notifyDataSetChanged();
 		
 	}
@@ -164,9 +167,10 @@ public class RecordSide extends Activity{
 		{
 			public void run() 
 			{
+				Log.i("recording","Stop");
+				((Button)findViewById(R.id.btnStart)).setText("Start");
 				stopRecording();
 			} 
-
 		};
 		handler.postDelayed(r, 15000);
 	}
