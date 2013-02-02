@@ -95,13 +95,17 @@ public class RecordSide extends Activity{
 		lv.setAdapter(adapter);
 		
 		File directory = new File(Environment.getExternalStorageDirectory().getPath(),AUDIO_RECORDER_FOLDER);
-		for (File file : directory.listFiles()){
-			if (file.getName().contains("AnonRecording")){
-				listItems.add(file.getName());
-				num++;
+		
+		if(directory.listFiles() != null){
+			for (File file : directory.listFiles()){
+				if (file.getName().contains("AnonRecording")){
+					listItems.add(file.getName());
+					num++;
+				}
 			}
 		}
 		adapter.notifyDataSetChanged();
+		
 	}
 
 	private void setButtonHandlers() {

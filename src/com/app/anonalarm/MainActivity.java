@@ -16,7 +16,7 @@ public class MainActivity extends TabActivity {
 
 		/** TabHost hosts tabs */
 		TabHost tabHost = (TabHost)findViewById(android.R.id.tabhost);
-
+		tabHost.setup();
 		/** tid1 is firstTabSpec Id. Its used to access outside. */
 		TabSpec firstTabSpec = tabHost.newTabSpec("tid1");
 		TabSpec secondTabSpec = tabHost.newTabSpec("tid1");
