@@ -1,8 +1,13 @@
 package com.app.anonalarm;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -45,7 +50,23 @@ public class AddAlarm extends PreferenceActivity {
 
         Intent returnIntent = new Intent();
         returnIntent.putExtra("created",1);
-        setResult(RESULT_OK,returnIntent);      
+        setResult(RESULT_OK,returnIntent);  
+        Calendar cur_cal = new GregorianCalendar();
+        cur_cal.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
+
+        Calendar cal = new GregorianCalendar();
+        cal.add(Calendar.DAY_OF_YEAR, cur_cal.get(Calendar.DAY_OF_YEAR));
+        cal.set(Calendar.HOUR_OF_DAY, cur_cal.get(Calendar.HOUR_OF_DAY));
+        cal.set(Calendar.MINUTE, cur_cal.get(Calendar.MINUTE));
+        cal.set(Calendar.SECOND, cur_cal.get(Calendar.SECOND)+5);
+        cal.set(Calendar.MILLISECOND, cur_cal.get(Calendar.MILLISECOND));
+        cal.set(Calendar.DATE, cur_cal.get(Calendar.DATE));
+        cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+        AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        //alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30*1000, pintent);
+        alarm.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pintent);
 		finish();
         
 	}

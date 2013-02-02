@@ -22,6 +22,7 @@ public class AlarmSide extends ListActivity {
     ListView alarmlist;
     AlarmDatabase db;
 	final static int ALARM_RESULT = 0;
+	List<AlarmItem> items;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -49,7 +50,7 @@ public class AlarmSide extends ListActivity {
 		});
         adapter=new ArrayAdapter<String>(this,R.layout.alarmitem,R.id.alarmlabel,listItems);
         setListAdapter(adapter);
-        List<AlarmItem> items=db.getAllAlarmItems();
+        items=db.getAllAlarmItems();
         for (int i = 0; i<items.size(); i++){
             listItems.add(((AlarmItem)items.get(i)).getLABEL());
         }
@@ -63,6 +64,7 @@ public class AlarmSide extends ListActivity {
         startActivityForResult(goToNextActivity, ALARM_RESULT);
     }
 	public void onCheckboxClicked(View v){
+		
 		Toast toast = Toast.makeText(getApplicationContext(), "Ticked", Toast.LENGTH_SHORT);
 		toast.show();
 	}
@@ -71,7 +73,7 @@ public class AlarmSide extends ListActivity {
     switch(requestCode) {
 	    case ALARM_RESULT: 
 	          if (resultCode == RESULT_OK) {
-	              List<AlarmItem> items = db.getAllAlarmItems();
+	              items = db.getAllAlarmItems();
 	              listItems.add(((AlarmItem)items.get(0)).getLABEL());
 	              adapter.notifyDataSetChanged();
 	          }

@@ -29,6 +29,7 @@
 	<activity android:name="com.app.anonalarm.AlarmSide" />
 	<activity android:name="com.app.anonalarm.RecordSide" />
 	<activity android:name="com.app.anonalarm.AddAlarm" />
+	<activity android:name="com.app.anonalarm.AlarmReceiver" />
     </application>
 	
 </manifest>
