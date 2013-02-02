@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">AnonAlarm</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+	<string name="add_alarm">Add Alarm</string>
+	<string name="set_time">Set Time</string>
+	<string name="set_time_summary">Set the time for the alarm.</string>
+	<string name="enabled">Enabled</string>
+	<string name="alert_pref">Alarm Alert Preferences</string>
+	<string name="vibrate">Vibrate</string>
+	<string name="vibrate_summary">I suggest you leave this on. Just incase a sound file is blank</string>
+	<string name="volume">Volume</string>
+	<string name="save">Save</string>
+	<string name="cancel">Cancel</string>
+	<string name="snooze">Enable Snooze</string>
+	<string name="snooze_summary">3 times, every 4 minutes</string>
+</resources>

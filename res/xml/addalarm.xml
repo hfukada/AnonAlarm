@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/set_time" >
+        <com.app.anonalarm.TimePreference
+            android:defaultValue="08:00"
+            android:key="preferences_start_time"
+            android:showDefault="true"
+            android:title="@string/set_time" />
+        <com.app.anonalarm.ListPreferenceMultiSelect
+            android:defaultValue="Mon"
+            android:dialogTitle="Weekdays for repeat"
+            android:entries="@array/preferences_weekdays_arr"
+            android:entryValues="@array/preferences_weekdays_arr_vals"
+            android:key="preferences_weekdays"
+            android:title="Repeat" 
+            android:summary="Never"/>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="preferences_enabled"
+            android:title="@string/enabled" />
+    </PreferenceCategory>
+	<PreferenceCategory android:title="@string/alert_pref" >
+		<CheckBoxPreference
+		    android:defaultValue="false"
+		    android:key="preferences_vibrate"
+		    android:title="@string/vibrate"
+		    android:summary="@string/vibrate_summary" />
+		<SeekBarPreference
+		    android:key="preferences_volume"
+		    android:title="@string/volume"
+		    android:defaultValue="0"
+		    android:max="100"/>
+		<com.app.anonalarm.ListPreferenceMultiSelect
+            android:defaultValue="None"
+            android:dialogTitle="Filters:Don't play..."
+            android:entries="@array/preferences_alarm_filter"
+            android:entryValues="@array/preferences_alarm_filter"
+            android:key="preferences_filter"
+            android:title="Anon Filter"
+            android:summary="None"/>
+		<CheckBoxPreference
+		    android:defaultValue="true"
+		    android:key="preferences_snooze"
+		    android:title="@string/snooze"
+		    android:summary="@string/snooze_summary" />
+		    
+	</PreferenceCategory>
+</PreferenceScreen>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingLeft="4.0dip"
+        android:paddingTop="5.0dip"
+        android:paddingRight="4.0dip"
+        android:paddingBottom="1.0dip">
+        <Button
+            android:id="@+id/savebtn"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/save"
+            android:layout_weight="1.0"
+            android:onClick="onSaveClick" />
+
+        <Button
+            android:id="@+id/cancelbtn"
+            android:layout_width="0.0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:layout_weight="1.0" 
+            android:onClick="onCancelClick"/>
+    </LinearLayout>
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+</LinearLayout>
