@@ -1,6 +1,7 @@
 package com.app.anonalarm;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -19,10 +20,13 @@ public class AlarmSide extends ListActivity {
     //DEFINING STRING ADAPTER WHICH WILL HANDLE DATA OF LISTVIEW
     ArrayAdapter<String> adapter;
     ListView alarmlist;
+    AlarmDatabase db;
+	final static int ALARM_RESULT = 0;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		db = new AlarmDatabase(this);
 		/* First Tab Content */
 		setContentView(R.layout.alarmside);
 		alarmlist = (ListView) findViewById(android.R.id.list);
@@ -45,15 +49,33 @@ public class AlarmSide extends ListActivity {
 		});
         adapter=new ArrayAdapter<String>(this,R.layout.alarmitem,R.id.alarmlabel,listItems);
         setListAdapter(adapter);
+        List<AlarmItem> items=db.getAllAlarmItems();
+        for (int i = 0; i<items.size(); i++){
+            listItems.add(((AlarmItem)items.get(i)).getLABEL());
+        }
+        adapter.notifyDataSetChanged();
+
+        
+        
 	}
 	public void addAlarmBtn(View v) {
         Intent goToNextActivity = new Intent(getApplicationContext(), AddAlarm.class);
-        startActivityForResult(goToNextActivity, 0);
-        //listItems.add("New Alarm");
-        //adapter.notifyDataSetChanged();
+        startActivityForResult(goToNextActivity, ALARM_RESULT);
     }
 	public void onCheckboxClicked(View v){
 		Toast toast = Toast.makeText(getApplicationContext(), "Ticked", Toast.LENGTH_SHORT);
 		toast.show();
 	}
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+    switch(requestCode) {
+	    case ALARM_RESULT: 
+	          if (resultCode == RESULT_OK) {
+	              List<AlarmItem> items = db.getAllAlarmItems();
+	              listItems.add(((AlarmItem)items.get(0)).getLABEL());
+	              adapter.notifyDataSetChanged();
+	          }
+	    }
+    }   
+
 }
