@@ -51,24 +51,24 @@ public class AddAlarm extends PreferenceActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("created",1);
         setResult(RESULT_OK,returnIntent);  
-        Calendar cur_cal = new GregorianCalendar();
+        Calendar cur_cal = Calendar.getInstance();
         cur_cal.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
 
         Calendar cal = new GregorianCalendar();
         cal.add(Calendar.DAY_OF_YEAR, cur_cal.get(Calendar.DAY_OF_YEAR));
         cal.set(Calendar.HOUR_OF_DAY, cur_cal.get(Calendar.HOUR_OF_DAY));
         cal.set(Calendar.MINUTE, cur_cal.get(Calendar.MINUTE));
-        cal.set(Calendar.SECOND, cur_cal.get(Calendar.SECOND)+5);
+        cal.set(Calendar.SECOND, cur_cal.get(Calendar.SECOND));
         cal.set(Calendar.MILLISECOND, cur_cal.get(Calendar.MILLISECOND));
         cal.set(Calendar.DATE, cur_cal.get(Calendar.DATE));
         cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
 
-        Intent intent = new Intent(this.getApplicationContext(), AlarmReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(this.getApplicationContext(), 0, intent, 0);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pi = PendingIntent.getBroadcast(this, 12345, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         //alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 30*1000, pintent);
-        alarm.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pi);
-		finish();
+        alarm.set(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis()+1500, pi);
+		//finish();
         
 	}
 	public void onCancelClick(View v){

@@ -93,8 +93,8 @@ public class AlarmDatabase extends SQLiteOpenHelper {
         return ai;
     }
 
-	public List<AlarmItem> getAllAlarmItems() {
-        List<AlarmItem> AlarmItemList = new ArrayList<AlarmItem>();
+	public ArrayList<AlarmItem> getAllAlarmItems() {
+        ArrayList<AlarmItem> AlarmItemList = new ArrayList<AlarmItem>();
         // Select All Query
         String selectQuery = "SELECT  * FROM " + TABLE_ALARMS +" ORDER BY "+KEY_ID+ " DESC";
  

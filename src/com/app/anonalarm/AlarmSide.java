@@ -10,15 +10,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class AlarmSide extends ListActivity {
 	/** Called when the activity is first created. */
 
-    ArrayList<String> listItems=new ArrayList<String>();
+    ArrayList<AlarmItem> listItems=new ArrayList<AlarmItem>();
 
     //DEFINING STRING ADAPTER WHICH WILL HANDLE DATA OF LISTVIEW
-    ArrayAdapter<String> adapter;
+    AlarmListAdapter adapter;
     ListView alarmlist;
     AlarmDatabase db;
 	final static int ALARM_RESULT = 0;
@@ -35,24 +36,29 @@ public class AlarmSide extends ListActivity {
 		alarmlist.setItemsCanFocus(false);
 		alarmlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			   @Override
-			   public void onItemClick(AdapterView<?> adapter, View view, int position, long arg) {
+			   public void onItemClick(AdapterView<?> adapterView, View view, int position, long arg) {
 			      //Object listItem = alarmlist.getItemAtPosition(position);
 			      Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
+			      
 			   } 
 			});	
 		alarmlist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+			public boolean onItemLongClick(AdapterView<?> adapterView, View arg1, int position, long arg3) {
 				// TODO Auto-generated method stub
-				Toast.makeText(getApplicationContext(), "Long", Toast.LENGTH_SHORT).show();
-				return false;
+				AlarmItem ai = listItems.get(position);
+				Toast.makeText(getApplicationContext(), ai.getLABEL() + " was removed.", Toast.LENGTH_SHORT).show();
+				db.deleteAlarmItem(ai);
+				listItems.remove(position);
+				adapter.notifyDataSetChanged();
+				return true;
 			}
 		});
-        adapter=new ArrayAdapter<String>(this,R.layout.alarmitem,R.id.alarmlabel,listItems);
+        adapter=new AlarmListAdapter(this,R.id.alarmlabel,listItems);
         setListAdapter(adapter);
         items=db.getAllAlarmItems();
         for (int i = 0; i<items.size(); i++){
-            listItems.add(((AlarmItem)items.get(i)).getLABEL());
+            listItems.add(items.get(i));
         }
         adapter.notifyDataSetChanged();
 
@@ -64,8 +70,8 @@ public class AlarmSide extends ListActivity {
         startActivityForResult(goToNextActivity, ALARM_RESULT);
     }
 	public void onCheckboxClicked(View v){
-		
-		Toast toast = Toast.makeText(getApplicationContext(), "Ticked", Toast.LENGTH_SHORT);
+        TextView id = (TextView)v.findViewById(R.id.alarmid);
+		Toast toast = Toast.makeText(getApplicationContext(), id.getText(), Toast.LENGTH_SHORT);
 		toast.show();
 	}
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -74,7 +80,8 @@ public class AlarmSide extends ListActivity {
 	    case ALARM_RESULT: 
 	          if (resultCode == RESULT_OK) {
 	              items = db.getAllAlarmItems();
-	              listItems.add(((AlarmItem)items.get(0)).getLABEL());
+	              listItems.add(items.get(0));
+	              
 	              adapter.notifyDataSetChanged();
 	          }
 	    }
