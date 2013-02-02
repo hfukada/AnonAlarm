@@ -96,7 +96,7 @@ public class RecordSide extends Activity{
 		
 		File directory = new File(Environment.getExternalStorageDirectory().getPath(),AUDIO_RECORDER_FOLDER);
 		
-		if(directory.listFiles()!= null){
+		if(directory.listFiles() != null){
 			for (File file : directory.listFiles()){
 				if (file.getName().contains("AnonRecording")){
 					listItems.add(file.getName());
