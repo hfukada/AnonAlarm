@@ -93,7 +93,7 @@ final AlarmItem ai = listItems.get(position);
         
         for (int i = 0; i<items.size(); i++){
             listItems.add(items.get(i));
-            
+            //what do i dooo
         }
         adapter.notifyDataSetChanged();
 
