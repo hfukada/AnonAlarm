@@ -48,6 +48,7 @@ containing a value of this type.
         public static final int rename_item=0x7f09000b;
         public static final int savebtn=0x7f090009;
         public static final int soundbar=0x7f090007;
+        public static final int upload_item=0x7f09000d;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;

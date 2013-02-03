@@ -3,8 +3,11 @@ package com.app.anonalarm;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +29,7 @@ public class AlarmSide extends ListActivity {
     AlarmDatabase db;
 	final static int ALARM_RESULT = 0;
 	List<AlarmItem> items;
+	Context baseContext;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -33,6 +37,7 @@ public class AlarmSide extends ListActivity {
 		db = new AlarmDatabase(this);
 		/* First Tab Content */
 		setContentView(R.layout.alarmside);
+		baseContext = getApplicationContext();
 		alarmlist = (ListView) findViewById(android.R.id.list);
 		alarmlist.setClickable(true);
 		alarmlist.setItemsCanFocus(false);
@@ -60,6 +65,9 @@ final AlarmItem ai = listItems.get(position);
 							public void onClick(DialogInterface dialog, int which) {
 								// TODO Auto-generated method stub
 				        			db.deleteAlarmItem(ai);
+				        	        Intent intent = new Intent(baseContext, AlarmReceiver.class);
+				        			PendingIntent pi = PendingIntent.getBroadcast(baseContext, ai.getID(),intent , PendingIntent.FLAG_CANCEL_CURRENT);
+				        			pi.cancel();
 									listItems.remove(ai);
 									Toast.makeText(getApplicationContext(), "Deleted: "+ai.getLABEL(), Toast.LENGTH_SHORT).show();
 									adapter.notifyDataSetChanged();
@@ -76,18 +84,16 @@ final AlarmItem ai = listItems.get(position);
 							
 				AlertDialog alertDialogShowing = alertDialog.create();
 				alertDialogShowing.show();
-
-				db.deleteAlarmItem(ai);
-				listItems.remove(position);
-				adapter.notifyDataSetChanged();
 				return true;
 			}
 		});
         adapter=new AlarmListAdapter(this,R.id.alarmlabel,listItems);
         setListAdapter(adapter);
         items=db.getAllAlarmItems();
+        
         for (int i = 0; i<items.size(); i++){
             listItems.add(items.get(i));
+            
         }
         adapter.notifyDataSetChanged();
 
