@@ -14,7 +14,7 @@ public class AlarmReceiver  extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Toast.makeText(context, "Alarm worked.", Toast.LENGTH_LONG).show();
-	}
+	}/*
 	public void playItem(String filename){
 		stopRecording();
 		if (mPlayer != null && mPlayer.isPlaying())
@@ -29,6 +29,6 @@ public class AlarmReceiver  extends BroadcastReceiver {
 		} catch (IOException e) {
 			Log.e("Playing", e.toString());
 		}
-
-	}
+		
+	}*/
 }

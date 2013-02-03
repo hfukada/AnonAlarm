@@ -3,7 +3,9 @@ package com.app.anonalarm;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -46,8 +48,35 @@ public class AlarmSide extends ListActivity {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView, View arg1, int position, long arg3) {
 				// TODO Auto-generated method stub
-				AlarmItem ai = listItems.get(position);
-				Toast.makeText(getApplicationContext(), ai.getLABEL() + " was removed.", Toast.LENGTH_SHORT).show();
+final AlarmItem ai = listItems.get(position);
+				
+				AlertDialog.Builder alertDialog = new AlertDialog.Builder(AlarmSide.this);
+				alertDialog.setTitle("Delete item");
+				alertDialog.setMessage("Are you sure you want to delete this item?")
+				           .setCancelable(false)
+				           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+				        	@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+				        			db.deleteAlarmItem(ai);
+									listItems.remove(ai);
+									Toast.makeText(getApplicationContext(), "Deleted: "+ai.getLABEL(), Toast.LENGTH_SHORT).show();
+									adapter.notifyDataSetChanged();
+								}
+				            })
+				            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+								
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO Auto-generated method stub
+									dialog.cancel();
+								}
+							});
+							
+				AlertDialog alertDialogShowing = alertDialog.create();
+				alertDialogShowing.show();
+
 				db.deleteAlarmItem(ai);
 				listItems.remove(position);
 				adapter.notifyDataSetChanged();

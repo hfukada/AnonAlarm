@@ -1,11 +1,17 @@
 package com.app.anonalarm;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -17,6 +23,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -90,25 +97,7 @@ public class RecordSide extends Activity{
 				playItem(file.getAbsolutePath() + "/"+listItem.toString());
 			}
 		});	
-		/*
-		lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				// TODO Auto-generated method stub
-				
-				Object listItem = lv.getItemAtPosition(position);
-				String filepath = Environment.getExternalStorageDirectory().getPath()+"/"+AUDIO_RECORDER_FOLDER+"/"+listItem.toString();
-				Log.d("deleting",filepath);
-				File file = new File(filepath);
-				file.delete();
-				listItems.remove(listItem);
-				Toast.makeText(getApplicationContext(), "Deleted: "+listItem.toString(), Toast.LENGTH_SHORT).show();
-				adapter.notifyDataSetChanged();
-				
-				return true;
-			}
-		});
-		*/
+		
 		adapter=new ArrayAdapter<String>(this,R.layout.recording,R.id.recordinglabel,listItems);
 		
 		lv.setAdapter(adapter);
@@ -117,10 +106,8 @@ public class RecordSide extends Activity{
 		
 		if(directory.listFiles()!= null){
 			for (File file : directory.listFiles()){
-				//if (file.getName().contains("AnonRecording")){
 					listItems.add(file.getName());
 					num++;
-				//}
 			}
 		}else{
 			num = 0;
@@ -197,10 +184,7 @@ public class RecordSide extends Activity{
 						    String filepathNew = Environment.getExternalStorageDirectory().getPath()+"/"+AUDIO_RECORDER_FOLDER+"/"+userInput.getText().toString()+".wav";
 							final File fileNew = new File(filepathNew);
 							
-							//if(!fileNew.exists())
-							//{
-							
-							file.renameTo(fileNew);//new File(filepathNew));
+							file.renameTo(fileNew);
 
 							Toast.makeText(getApplicationContext(), "Renamed: "+listItem.toString()+" to "+fileNew.getName(), Toast.LENGTH_SHORT).show();
 						    listItems.remove(listItem.toString());
@@ -217,11 +201,15 @@ public class RecordSide extends Activity{
 						}
 					});
 			    renameAlert.show();
+		   case R.id.upload_item:
+			   //temp.addAll((Collection<? extends String>)file.toString());
+			   AsyncUpload upload = new AsyncUpload();
+			   upload.setFilePath(filepath);
+			   upload.execute("");
+			   Toast.makeText(getApplicationContext(), "Uploaded: "+listItem.toString(), Toast.LENGTH_SHORT).show();
 		}
 		return true;
 	}
-	
-
 
 	private void setButtonHandlers() {
 		((Button)findViewById(R.id.btnStart)).setOnClickListener(btnClick);
