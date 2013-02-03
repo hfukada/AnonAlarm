@@ -77,7 +77,6 @@ public class AlarmDatabase extends SQLiteOpenHelper {
      
         // Inserting Row
         db.insert(TABLE_ALARMS, null, values);
-        db.close(); // Closing database connection
     }
     public AlarmItem getAlarmItem(int id) {
         SQLiteDatabase db = this.getReadableDatabase();

@@ -8,6 +8,7 @@ import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,7 +41,17 @@ public class AlarmSide extends ListActivity {
 			   @Override
 			   public void onItemClick(AdapterView<?> adapterView, View view, int position, long arg) {
 			      //Object listItem = alarmlist.getItemAtPosition(position);
-			      Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
+				   
+				   
+				   AlarmItem ai = listItems.get(position);
+			        Intent goToNextActivity = new Intent(getApplicationContext(), AddAlarm.class);
+			        goToNextActivity.putExtra("alarmId", ai.getID());
+			        
+			        startActivity(goToNextActivity);
+
+		              adapter.notifyDataSetChanged();
+			        
+				   //Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
 			      
 			   } 
 			});	
@@ -95,11 +106,12 @@ public class AlarmSide extends ListActivity {
 	public void addAlarmBtn(View v) {
         Intent goToNextActivity = new Intent(getApplicationContext(), AddAlarm.class);
         startActivityForResult(goToNextActivity, ALARM_RESULT);
+
+        adapter.notifyDataSetChanged();
     }
 	public void onCheckboxClicked(View v){
-        TextView id = (TextView)v.findViewById(R.id.alarmid);
-		Toast toast = Toast.makeText(getApplicationContext(), id.getText(), Toast.LENGTH_SHORT);
-		toast.show();
+
+        adapter.notifyDataSetChanged();
 	}
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
