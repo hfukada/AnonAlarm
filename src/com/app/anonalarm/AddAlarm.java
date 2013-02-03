@@ -27,13 +27,22 @@ import android.widget.Toast;
 public class AddAlarm extends PreferenceActivity {
 	/** Called when the activity is first created. */
 	SharedPreferences prefs;
+	int pos;
+	AlarmDatabase db;
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.addalarm);
 		setContentView(R.layout.saveprefs);
+		Bundle data = this.getIntent().getExtras();
+		int pos = (Integer) data.get("pos");
 		prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		db = new AlarmDatabase(this);
+		
+		AlarmItem ai = db.getAlarmItem(pos);
+		
+		Log.d("Values",prefs.getString("preferences_start_time", "08:00"));
 	}
 	
 	public void onSaveClick(View v){

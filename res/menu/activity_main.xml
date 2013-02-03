@@ -10,4 +10,5 @@
   <item android:id="@+id/rename_item" android:title="Rename"/>
   <item android:id="@+id/delete_item" android:title="Delete"/>
   <item android:id="@+id/upload_item" android:title="Upload"/>
+  <item android:id="@+id/report_upload" android:title="Upload Report"/>
 </menu>

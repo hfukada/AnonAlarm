@@ -50,8 +50,11 @@ public class AlarmSide extends ListActivity {
 			   @Override
 			   public void onItemClick(AdapterView<?> adapterView, View view, int position, long arg) {
 			      //Object listItem = alarmlist.getItemAtPosition(position);
-			      Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
-			      
+				   	AlarmItem ai = listItems.get(position);
+			        
+				   	Intent goToNextActivity = new Intent(getApplicationContext(), AddAlarm.class);
+				   	goToNextActivity.putExtra("pos", position);
+			        startActivityForResult(goToNextActivity, ALARM_RESULT);
 			   } 
 			});	
 		alarmlist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

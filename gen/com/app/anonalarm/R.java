@@ -46,6 +46,7 @@ containing a value of this type.
         public static final int list2=0x7f090008;
         public static final int recordinglabel=0x7f090005;
         public static final int rename_item=0x7f09000b;
+        public static final int report_upload=0x7f09000e;
         public static final int savebtn=0x7f090009;
         public static final int soundbar=0x7f090007;
         public static final int upload_item=0x7f09000d;

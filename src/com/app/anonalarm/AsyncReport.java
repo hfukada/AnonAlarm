@@ -4,28 +4,18 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
-import android.content.Context;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
-import android.provider.Settings;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
-public class AsyncUpload extends AsyncTask<String, Integer, String>{
+public class AsyncReport extends AsyncTask {
 	private String filepath;
 	void setFilePath(String filepath)
 	{
@@ -36,15 +26,19 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 	{
 		this.uid = uid;
 	}
-	
+	private String reportInput = "";
+	void setUserMessage(String reportInput)
+	{
+		this.reportInput = reportInput;
+	}
 	@Override
-	protected String doInBackground(String... params) {
+	protected Object doInBackground(Object... params) {
 		HttpURLConnection connection = null;
 		DataOutputStream outputStream = null;
 
 		Log.d("params", "params is"+filepath);
 		String pathToOurFile = filepath;
-		String urlServer = "http://deltatango.dyndns.org/upload.php";
+		String urlServer = "http://deltatango.dyndns.org/report.php";
 		String lineEnd = "\r\n";
 		String twoHyphens = "--";
 		String boundary =  "*****";
@@ -80,29 +74,16 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
         	String outFilePath [] = pathToOurFile.split("/");
 			outputStream.writeBytes("Content-Disposition: form-data; name=\"uid\""+lineEnd+lineEnd+md5(uid)+lineEnd);
             outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-			outputStream.writeBytes("Content-Disposition: form-data; name=\"check\""+lineEnd+lineEnd+md5(outFilePath[outFilePath.length-1]+md5(uid))+lineEnd);		
+			outputStream.writeBytes("Content-Disposition: form-data; name=\"filename\""+lineEnd+lineEnd+outFilePath[outFilePath.length-1]+lineEnd);		
             outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-			outputStream.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\"; filename=\""+outFilePath[outFilePath.length-1]+"\""+lineEnd+lineEnd);
+			outputStream.writeBytes("Content-Disposition: form-data; name=\"reason\""+lineEnd+lineEnd+reportInput+lineEnd);
+			outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+			outputStream.writeBytes("Content-Disposition: form-data; name=\"check\""+lineEnd+lineEnd+md5(reportInput+md5(uid)));
 			//outputStream.writeBytes("Content-Disposition: form-data; name=\""+s4+lineEnd);
 			Log.d("checkpoint","4");
 			//Log.d("hash",md5(outFilePath[outFilePath.length-1]+md5(uid)));
-			FileInputStream fileInputStream = new FileInputStream(new File(pathToOurFile) );
-			bytesAvailable = fileInputStream.available();
-			bufferSize = Math.min(bytesAvailable, maxBufferSize);
-			buffer = new byte[bufferSize];
-			Log.d("checkpoint","5");
-			// Read file
-			bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-			Log.d("checkpoint","6");
-			while (bytesRead > 0)
-			{
-				outputStream.write(buffer, 0, bufferSize);
-				bytesAvailable = fileInputStream.available();
-				bufferSize = Math.min(bytesAvailable, maxBufferSize);
-				bytesRead = fileInputStream.read(buffer, 0, bufferSize);
-			}
-			fileInputStream.close();
-			 outputStream.writeBytes(lineEnd + twoHyphens + boundary + lineEnd);
+			
+			outputStream.writeBytes(lineEnd + twoHyphens + boundary + twoHyphens + lineEnd);
 			outputStream.flush();
 			outputStream.close();
 			Log.d("checkpoint","7");
@@ -122,9 +103,6 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 			Log.d("InputStream",in.toString());
 			DataInputStream inStream = new DataInputStream(in);
 			Log.d("InputStream-2",inStream.toString());
-			
-			
-			
 			
 			}
 			catch (Exception ex)
@@ -153,4 +131,5 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 		return input;
 		}
 	}
+
 }

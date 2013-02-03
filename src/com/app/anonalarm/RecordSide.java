@@ -18,11 +18,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.AlertDialog.Builder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -136,6 +139,9 @@ public class RecordSide extends Activity{
 		String filepath = Environment.getExternalStorageDirectory().getPath()+"/"+AUDIO_RECORDER_FOLDER+"/"+listItem.toString();
 		final File file = new File(filepath);
 		
+		WifiManager wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+		WifiInfo wInfo = wifiManager.getConnectionInfo();
+		
 		switch(item.getItemId())
 		{
 			case R.id.delete_item:
@@ -201,13 +207,51 @@ public class RecordSide extends Activity{
 						}
 					});
 			    renameAlert.show();
-			    break;
 		   case R.id.upload_item:
 			   //temp.addAll((Collection<? extends String>)file.toString());
 			   AsyncUpload upload = new AsyncUpload();
 			   upload.setFilePath(filepath);
-			   upload.setContext(this);
+			   upload.setUID(wInfo.getMacAddress());
 			   upload.execute("");
+			   Toast.makeText(getApplicationContext(), "Uploaded: "+listItem.toString(), Toast.LENGTH_SHORT).show();
+			   break;
+		   case R.id.report_upload:
+			   AlertDialog.Builder reportAlert = new AlertDialog.Builder(this);
+			    reportAlert.setTitle("Report a file");
+			    reportAlert.setMessage("Why is this file inappropriate?");
+			    final EditText reportInput = new EditText(this);
+			    reportAlert.setView(reportInput);
+			    final String fileName = filepath;
+			    final String macAddr= wInfo.getMacAddress();
+			    	reportAlert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							AsyncReport report = new AsyncReport();
+							   report.setFilePath(fileName);
+							   report.setUID(macAddr);
+							   Log.d("Click", "DialogClicked");
+							   report.setUserMessage(reportInput.getText().toString());
+							   report.execute("");
+							Toast.makeText(getApplicationContext(), "Your report is being submitted", Toast.LENGTH_SHORT).show();
+						}
+					})
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							dialog.cancel();
+						}
+					});
+			   reportAlert.show();
+			   /*AsyncReport report = new AsyncReport();
+			   report.setFilePath(filepath);
+			   report.setUID(wInfo.getMacAddress());
+			   report.setUserMessage(reportInput.getText().toString());
+			   report.execute("");*/
+			   Toast.makeText(getApplicationContext(), "Report uploaded: "+listItem.toString(), Toast.LENGTH_SHORT).show();
 			   break;
 		}
 		return true;
@@ -455,7 +499,7 @@ public class RecordSide extends Activity{
 				}
 				break;
 			}
-			}
+		  }
 		}
 	};
 	public void playItem(String filename){
