@@ -9,10 +9,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.DigestInputStream;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import android.os.AsyncTask;
+import android.provider.Settings;
 import android.util.Log;
 
 public class AsyncUpload extends AsyncTask<String, Integer, String>{
@@ -61,11 +65,15 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 	        Log.d("checkpoint", "os");
 			outputStream = new DataOutputStream( os );
 			Log.d("checkpoint","2");
-			String s1 = "B";
+			String uid =  Settings.Secure.ANDROID_ID;
+			
+			//MessageDigest md = MessageDigest.getInstance("MD5");
+			//md.digest(buffer, 0, maxBufferSize);
+			
 			String s2 = "3";
 			Log.d("checkpoint","3");
             outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-			outputStream.writeBytes("Content-Disposition: form-data; name=\"uid\""+lineEnd+lineEnd+s1+lineEnd);
+			outputStream.writeBytes("Content-Disposition: form-data; name=\"uid\""+lineEnd+lineEnd+uid+lineEnd);
             outputStream.writeBytes(twoHyphens + boundary + lineEnd);
 			outputStream.writeBytes("Content-Disposition: form-data; name=\"check\""+lineEnd+lineEnd+s2+lineEnd);
 			String outFilePath [] = pathToOurFile.split("/");

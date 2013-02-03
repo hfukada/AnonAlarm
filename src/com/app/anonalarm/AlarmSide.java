@@ -48,7 +48,7 @@ public class AlarmSide extends ListActivity {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView, View arg1, int position, long arg3) {
 				// TODO Auto-generated method stub
-final AlarmItem ai = listItems.get(position);
+				final AlarmItem ai = listItems.get(position);
 				
 				AlertDialog.Builder alertDialog = new AlertDialog.Builder(AlarmSide.this);
 				alertDialog.setTitle("Delete item");
@@ -77,8 +77,6 @@ final AlarmItem ai = listItems.get(position);
 				AlertDialog alertDialogShowing = alertDialog.create();
 				alertDialogShowing.show();
 
-				db.deleteAlarmItem(ai);
-				listItems.remove(position);
 				adapter.notifyDataSetChanged();
 				return true;
 			}
@@ -91,7 +89,6 @@ final AlarmItem ai = listItems.get(position);
         }
         adapter.notifyDataSetChanged();
 
-        
         
 	}
 	public void addAlarmBtn(View v) {
