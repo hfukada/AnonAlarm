@@ -75,7 +75,7 @@ public class AddAlarm extends PreferenceActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("created",1);
         setResult(RESULT_OK,returnIntent);  
-        /*
+        
         Calendar cur_cal = new GregorianCalendar();
         
         Calendar timeOff = new GregorianCalendar();
@@ -87,15 +87,15 @@ public class AddAlarm extends PreferenceActivity {
         Calendar curr =  Calendar.getInstance();
         if (timeOff.before(curr)){
         	timeOff.add(Calendar.DAY_OF_WEEK, 7);
-        }*/
+        }
 
 		Log.d("alarmtimestring",alarmtime.getTime().getDay()+"");
 		Log.d("alarmtimestring",alarmtime.getTime().getDate()+"");
 		/*
         Log.d("CUrr",(timeOff.getTimeInMillis()-curr.getTimeInMillis())+"");
         Log.d("Alarm",timeOff.getTimeInMillis()+"");*/
-        ai.setTIME(alarmtime.getTimeInMillis());
-		ai.setNextTime();
+        
+		//ai.setNextTime();
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, ai.getID(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
