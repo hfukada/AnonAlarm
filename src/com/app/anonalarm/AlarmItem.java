@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import android.util.Log;
+
 public class AlarmItem{
     private int ID;
     private String LABEL;
@@ -106,6 +108,7 @@ public class AlarmItem{
     	long closest=0;
     	Calendar timeOff = new GregorianCalendar();
     	Calendar alarmtime = new GregorianCalendar();
+    	Calendar curr = null;
     	alarmtime.setTimeInMillis(this.TIME);
     	for (int i = 0; i < days.length; i++){
     		if (days[i].equals("Mon")){
@@ -127,7 +130,7 @@ public class AlarmItem{
 	        timeOff.set(Calendar.HOUR_OF_DAY, alarmtime.get(Calendar.HOUR_OF_DAY));
 	        timeOff.set(Calendar.MINUTE, alarmtime.get(Calendar.MINUTE));
 	        timeOff.set(Calendar.SECOND, 0);
-	        Calendar curr =  Calendar.getInstance();
+	        curr =  Calendar.getInstance();
 	        if (timeOff.before(curr)){
 	        	timeOff.add(Calendar.DAY_OF_WEEK, 7);
 	        }
@@ -135,6 +138,8 @@ public class AlarmItem{
 	        	closest = timeOff.getTimeInMillis();
 	        }
     	}
+    	Log.i("TIME SET",TIME+"");
+    	Log.i("TIME CURR",curr.getTimeInMillis()+"");
     	TIME = closest;
     }
 }

@@ -48,12 +48,12 @@ public class AddAlarm extends PreferenceActivity {
 		int snooze = prefs.getBoolean("preferences_snooze", true) ? 1:0;
 		String label = prefs.getString("preferences_label", "Alarm");
 		
-		/*try {
+		try {
 			alarmtime.setTime(new SimpleDateFormat("EEE-kk:mm").parse(repeat+"-"+prefs.getString("preferences_start_time","")));
 		} catch (ParseException err) {
 			// TODO Auto-generated catch block
 			Log.e("Parse Failure","yeah",err);
-		}*/
+		}
 		DownloadSound sound = new DownloadSound();
 		sound.execute("");
 		String soundfile = null;
@@ -94,7 +94,7 @@ public class AddAlarm extends PreferenceActivity {
 		/*
         Log.d("CUrr",(timeOff.getTimeInMillis()-curr.getTimeInMillis())+"");
         Log.d("Alarm",timeOff.getTimeInMillis()+"");*/
-        
+        ai.setTIME(alarmtime.getTimeInMillis());
 		ai.setNextTime();
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, ai.getID(), intent, PendingIntent.FLAG_CANCEL_CURRENT);

@@ -33,25 +33,12 @@ public class AlarmReceiver  extends BroadcastReceiver {
 			           .setPositiveButton("Snooze", new DialogInterface.OnClickListener() {
 			        	@Override
 						public void onClick(DialogInterface dialog, int which) {
+			        			if (mPlayer != null){
+			        				mPlayer.stop();
+			        				mPlayer.release();
+			        			}
 								ai.setTIME(ai.getTIME() + 4*1000*60);
-								DownloadSound sound = new DownloadSound();
-								sound.execute("");
-								String soundfile = null;
-								synchronized(sound) {
-									try {
-										sound.wait();
-									}
-									catch(InterruptedException iEx) {}
-									soundfile = sound.getFilename();
-								}
-								ai.setSOUND(soundfile);
-								Intent newIntent = new Intent(, AlarmReceiver.class);
-								
-						        PendingIntent pi = PendingIntent.getBroadcast(context, ai.getID(), newIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-						        AlarmManager alarm = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-						        //alarm.set(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis()+1500, pi);
-						        ai.setNextTime();
-						        alarm.set(AlarmManager.RTC_WAKEUP, ai.getTIME(), pi);
+								Log.i("Dialog","Okay");
 							}
 			            })
 			            .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
@@ -63,6 +50,7 @@ public class AlarmReceiver  extends BroadcastReceiver {
 									mPlayer.stop();
 									mPlayer.release();
 								}
+								Log.i("Dialog","Dismiss");
 								dialog.cancel();
 							}
 						});
@@ -91,6 +79,7 @@ public class AlarmReceiver  extends BroadcastReceiver {
 	        ai.setNextTime();
 	        alarm.set(AlarmManager.RTC_WAKEUP, ai.getTIME(), pi);
 		}
+		Log.i("Received","Finsh");
 	}
 	
 	public void playItem(String filename){
@@ -105,6 +94,8 @@ public class AlarmReceiver  extends BroadcastReceiver {
 			mPlayer.setDataSource(Environment.getExternalStorageDirectory().getPath()+"/AnonAlarmData/"+filename);
 			mPlayer.prepare();
 			mPlayer.start();
+			mPlayer.setLooping(true);
+
 		} catch (IOException e) {
 			Log.e("Playing", e.toString());
 		}
