@@ -1,6 +1,7 @@
 package com.app.anonalarm;
 
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,18 +26,18 @@ import android.widget.Toast;
 
 public class AddAlarm extends PreferenceActivity {
 	/** Called when the activity is first created. */
+	SharedPreferences prefs;
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.addalarm);
 		setContentView(R.layout.saveprefs);
-
+		prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 	}
 	
 	public void onSaveClick(View v){
 		//save prefs
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int currentTimestamp = (int)System.currentTimeMillis();
 		Calendar alarmtime = new GregorianCalendar();
 		long currTime=Calendar.getInstance().getTimeInMillis();
@@ -48,12 +49,11 @@ public class AddAlarm extends PreferenceActivity {
 		int snooze = prefs.getBoolean("preferences_snooze", true) ? 1:0;
 		String label = prefs.getString("preferences_label", "Alarm");
 		
-		try {
-			alarmtime.setTime(new SimpleDateFormat("EEE-kk:mm").parse(repeat+"-"+prefs.getString("preferences_start_time","")));
-		} catch (ParseException err) {
-			// TODO Auto-generated catch block
-			Log.e("Parse Failure","yeah",err);
-		}
+		Log.d("Values",prefs.getString("preferences_start_time", "08:00"));
+		String[] timearr = prefs.getString("preferences_start_time", "08:00").split(":");
+		alarmtime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(timearr[0]));
+		alarmtime.set(Calendar.MINUTE, Integer.parseInt(timearr[1]));
+		//alarmtime.setTime(new SimpleDateFormat("kk:mm").parse(prefs.getString("preferences_start_time","08:00")));
 		DownloadSound sound = new DownloadSound();
 		sound.execute("");
 		String soundfile = null;
@@ -68,15 +68,14 @@ public class AddAlarm extends PreferenceActivity {
 		
 		AlarmItem ai = new AlarmItem(currentTimestamp, label,0,repeat,vibrate,volume,
 	    		filter,snooze,soundfile,enable);
+		ai.setTIME(alarmtime.getTimeInMillis());
 
-        AlarmDatabase db = new AlarmDatabase(this);
-        db.addAlarmItem(ai);
 
         Intent returnIntent = new Intent();
         returnIntent.putExtra("created",1);
         setResult(RESULT_OK,returnIntent);  
         
-        
+        /*
         Calendar timeOff = new GregorianCalendar();
         //alarmtime.set(Calendar.YEAR, 2013);
         timeOff.set(Calendar.DAY_OF_WEEK, alarmtime.get(Calendar.DAY_OF_WEEK));
@@ -87,16 +86,19 @@ public class AddAlarm extends PreferenceActivity {
         if (timeOff.before(curr)){
         	timeOff.add(Calendar.DAY_OF_WEEK, 7);
         }
-
-		Log.d("alarmtimestring",alarmtime.getTime().getDay()+"");
-		Log.d("alarmtimestring",alarmtime.getTime().getDate()+"");
-		/*
-        Log.d("CUrr",(timeOff.getTimeInMillis()-curr.getTimeInMillis())+"");
+		
+		
+        Log.d("Curr",(timeOff.getTimeInMillis()-curr.getTimeInMillis())+"");
         Log.d("Alarm",timeOff.getTimeInMillis()+"");*/
-        ai.setTIME(timeOff.getTimeInMillis());
-		//ai.setNextTime();
+        
+        //ai.setTIME(timeOff.getTimeInMillis());
+		ai.setNextTime();
+		
+
+        AlarmDatabase db = new AlarmDatabase(this);
+        db.addAlarmItem(ai);
         Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(this, ai.getID(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi = PendingIntent.getBroadcast(this, ai.getID(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
         
         //alarm.set(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis()+1500, pi);

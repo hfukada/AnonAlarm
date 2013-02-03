@@ -39,6 +39,7 @@ public class TimePreference extends DialogPreference {
     public TimePreference(Context ctxt, AttributeSet attrs, int defStyle) {
         super(ctxt, attrs, defStyle);
         is24HourFormat = DateFormat.is24HourFormat(ctxt);
+       
         setPositiveButtonText("Set");
         setNegativeButtonText("Cancel");
     }

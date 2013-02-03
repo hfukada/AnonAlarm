@@ -31,10 +31,11 @@ public class AlarmSide extends ListActivity {
 		
 		
 		try{
-			db = new AlarmDatabase(this);	
+			db = new AlarmDatabase(this);
+	        items=db.getAllAlarmItems();
 		}catch(Exception e){
-				this.deleteDatabase("AnonAlarmData");
-				db = new AlarmDatabase(this);
+			this.deleteDatabase("AnonAlarmData");
+			db = new AlarmDatabase(this);
 		}
 		
 		
@@ -67,7 +68,6 @@ public class AlarmSide extends ListActivity {
 		});
         adapter=new AlarmListAdapter(this,R.id.alarmlabel,listItems);
         setListAdapter(adapter);
-        items=db.getAllAlarmItems();
         for (int i = 0; i<items.size(); i++){
             listItems.add(items.get(i));
         }

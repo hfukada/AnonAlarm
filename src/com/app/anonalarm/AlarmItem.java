@@ -1,8 +1,13 @@
 package com.app.anonalarm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import android.util.Log;
+import android.widget.Toast;
 
 public class AlarmItem{
     private int ID;
@@ -15,6 +20,7 @@ public class AlarmItem{
     private int SNOOZE;
     private String SOUND;
     private int ENABLE;
+    private static final String[] numToDay = {"", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
     
     public AlarmItem(int id, String label, long time, String repeat, int vibrate, int volume,
     		String filter, int snooze, String sound, int enable){
@@ -103,38 +109,33 @@ public class AlarmItem{
 	}
     public void setNextTime(){
     	String[] days = this.REPEAT.split(",");
-    	long closest=0;
+    	ArrayList<String> daysArrayList = new ArrayList<String>(Arrays.asList(days));
+    	
     	Calendar timeOff = new GregorianCalendar();
+        Calendar curr =  new GregorianCalendar();
     	Calendar alarmtime = new GregorianCalendar();
     	alarmtime.setTimeInMillis(this.TIME);
-    	for (int i = 0; i < days.length; i++){
-    		if (days[i].equals("Mon")){
-    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
-    		} else if (days[i].equals("Tue")){
-    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.TUESDAY);
-    		} else if (days[i].equals("Wed")){
-    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.WEDNESDAY);
-    		} else if (days[i].equals("Thu")){
-    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.THURSDAY);
-    		} else if (days[i].equals("Fri")){
-    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.FRIDAY);
-    		} else if (days[i].equals("Sat")){
-    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY);
-    		} else{
-    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
-    		}
-	        //timeOff.set(Calendar.DAY_OF_WEEK, alarmtime.get(Calendar.DAY_OF_WEEK));
-	        timeOff.set(Calendar.HOUR_OF_DAY, alarmtime.get(Calendar.HOUR_OF_DAY));
-	        timeOff.set(Calendar.MINUTE, alarmtime.get(Calendar.MINUTE));
-	        timeOff.set(Calendar.SECOND, 0);
-	        Calendar curr =  Calendar.getInstance();
-	        if (timeOff.before(curr)){
-	        	timeOff.add(Calendar.DAY_OF_WEEK, 7);
-	        }
-	        if( i == 0 || closest > timeOff.getTimeInMillis()){
-	        	closest = timeOff.getTimeInMillis();
-	        }
-    	}
-    	TIME = closest;
+        timeOff.set(Calendar.HOUR_OF_DAY, alarmtime.get(Calendar.HOUR_OF_DAY));
+        timeOff.set(Calendar.MINUTE, alarmtime.get(Calendar.MINUTE));
+        timeOff.set(Calendar.SECOND, 0);
+        Log.i("TIME", alarmtime.get(Calendar.HOUR_OF_DAY)+" "+alarmtime.get(Calendar.MINUTE)+" "+alarmtime.get(Calendar.SECOND));
+        Log.i("TIME", timeOff.get(Calendar.HOUR_OF_DAY)+" "+timeOff.get(Calendar.MINUTE)+" "+timeOff.get(Calendar.SECOND));
+        int i = 0;
+        while(i<8) {
+        	if(daysArrayList.contains(numToDay[timeOff.get(Calendar.DAY_OF_WEEK)]) && !timeOff.before(curr)) {
+        		//Set alarm and break because we have our alarm
+        		alarmtime.set(Calendar.DAY_OF_WEEK, timeOff.get(Calendar.DAY_OF_WEEK));
+            	Log.d("TIME RECORDED",alarmtime.get(Calendar.DAY_OF_WEEK)+"");
+            	
+        		break;
+        	}
+        	timeOff.add(Calendar.DAY_OF_YEAR, 1);
+        	i++;
+        }
+        
+    	Log.d("Current time",curr.getTimeInMillis()+"");
+    	Log.i("Diff:",((timeOff.getTimeInMillis()-curr.getTimeInMillis()))/1000 +"");
+    	
+    	TIME = timeOff.getTimeInMillis();
     }
 }

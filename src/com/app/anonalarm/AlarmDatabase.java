@@ -90,10 +90,11 @@ public class AlarmDatabase extends SQLiteOpenHelper {
             cursor.moveToFirst();
         
         AlarmItem ai = new AlarmItem(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), Integer.parseInt(cursor.getString(2)),cursor.getString(3),
+                cursor.getString(1), Long.parseLong(cursor.getString(2)),cursor.getString(3),
                 Integer.parseInt(cursor.getString(4)),Integer.parseInt(cursor.getString(5)),
                 cursor.getString(6),Integer.parseInt(cursor.getString(7)),cursor.getString(8),
                 Integer.parseInt(cursor.getString(9)));
+        cursor.close();
         return ai;
     }
 
@@ -109,17 +110,21 @@ public class AlarmDatabase extends SQLiteOpenHelper {
 	        if (cursor.moveToFirst()) {
 	            do {
 	                AlarmItem alarmItem = new AlarmItem(Integer.parseInt(cursor.getString(0)),
-	                        cursor.getString(1), Integer.parseInt(cursor.getString(2)),cursor.getString(3),
+	                        cursor.getString(1), Long.parseLong(cursor.getString(2)),cursor.getString(3),
 	                        Integer.parseInt(cursor.getString(4)),Integer.parseInt(cursor.getString(5)),
 	                        cursor.getString(6),Integer.parseInt(cursor.getString(7)),cursor.getString(8),
 	                        Integer.parseInt(cursor.getString(9)));
 	                AlarmItemList.add(alarmItem);
 	            } while (cursor.moveToNext());
+	            
 	        }
+	        
         }catch (Exception e){
         	Log.e("Database error","Go Delete your database",e);
         	
         	
+        }finally{
+        	cursor.close();
         }
 	        // return AlarmItem list
         return AlarmItemList;
@@ -158,6 +163,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         cursor.close();
+        db.close();
         // return count
         return cursor.getCount();
     }
@@ -170,13 +176,14 @@ public class AlarmDatabase extends SQLiteOpenHelper {
             cursor.moveToFirst();
         
             ai = new AlarmItem(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), Integer.parseInt(cursor.getString(2)),cursor.getString(3),
-                Integer.parseInt(cursor.getString(4)),Integer.parseInt(cursor.getString(5)),
-                cursor.getString(6),Integer.parseInt(cursor.getString(7)),cursor.getString(8),
-                Integer.parseInt(cursor.getString(9)));
+                    cursor.getString(1), Long.parseLong(cursor.getString(2)),cursor.getString(3),
+                    Integer.parseInt(cursor.getString(4)),Integer.parseInt(cursor.getString(5)),
+                    cursor.getString(6),Integer.parseInt(cursor.getString(7)),cursor.getString(8),
+                    Integer.parseInt(cursor.getString(9)));
         	Log.d("sql","got message");
     	}
     	cursor.close();
+    	db.close();
     	if(ai==null) Log.e("sql", "no matches");
         return ai;
     }
