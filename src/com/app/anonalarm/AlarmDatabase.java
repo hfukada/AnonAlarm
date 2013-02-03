@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class AlarmDatabase extends SQLiteOpenHelper {
  
@@ -35,6 +36,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
  
     public AlarmDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        
     }
  
     // Creating Tables
@@ -42,7 +44,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_ALARM_ITEMS_TABLE = "CREATE TABLE " + TABLE_ALARMS+ "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_LABEL + " TEXT,"
-                + KEY_TIME + " TEXT," + KEY_REPEAT + " INTEGER,"+KEY_VIBRATE+" INTEGER, "
+                + KEY_TIME + " INTEGER," + KEY_REPEAT + " INTEGER,"+KEY_VIBRATE+" INTEGER, "
                 + KEY_VOLUME + " INTEGER," + KEY_FILTER + " TEXT," + KEY_SNOOZE + " TEXT," + KEY_SOUND + " TEXT," 
                 + KEY_ENABLE + " INTEGER)";
         db.execSQL(CREATE_ALARM_ITEMS_TABLE);
@@ -69,6 +71,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
         values.put(KEY_FILTER, ai.getFILTER()); // alarmitem filter
         values.put(KEY_SNOOZE, ai.getSNOOZE()); // alarmitem snooze
         values.put(KEY_SOUND, ai.getSOUND()); // alarmitem sound
+        Log.d("sql", ai.getFILTER());
         values.put(KEY_ENABLE, ai.getENABLE()); // alarmitem enable
      
         // Inserting Row
@@ -86,7 +89,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
             cursor.moveToFirst();
         
         AlarmItem ai = new AlarmItem(Integer.parseInt(cursor.getString(0)),
-                cursor.getString(1), cursor.getString(2),cursor.getString(3),
+                cursor.getString(1), Integer.parseInt(cursor.getString(2)),cursor.getString(3),
                 Integer.parseInt(cursor.getString(4)),Integer.parseInt(cursor.getString(5)),
                 cursor.getString(6),Integer.parseInt(cursor.getString(7)),cursor.getString(8),
                 Integer.parseInt(cursor.getString(9)));
@@ -100,19 +103,22 @@ public class AlarmDatabase extends SQLiteOpenHelper {
  
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
- 
-        // looping through all rows and adding to list
-        if (cursor.moveToFirst()) {
-            do {
-                AlarmItem alarmItem = new AlarmItem(Integer.parseInt(cursor.getString(0)),
-                        cursor.getString(1), cursor.getString(2),cursor.getString(3),
-                        Integer.parseInt(cursor.getString(4)),Integer.parseInt(cursor.getString(5)),
-                        cursor.getString(6),Integer.parseInt(cursor.getString(7)),cursor.getString(8),
-                        Integer.parseInt(cursor.getString(9)));
-                AlarmItemList.add(alarmItem);
-            } while (cursor.moveToNext());
+        try{
+	        // looping through all rows and adding to list
+	        if (cursor.moveToFirst()) {
+	            do {
+	                AlarmItem alarmItem = new AlarmItem(Integer.parseInt(cursor.getString(0)),
+	                        cursor.getString(1), Integer.parseInt(cursor.getString(2)),cursor.getString(3),
+	                        Integer.parseInt(cursor.getString(4)),Integer.parseInt(cursor.getString(5)),
+	                        cursor.getString(6),Integer.parseInt(cursor.getString(7)),cursor.getString(8),
+	                        Integer.parseInt(cursor.getString(9)));
+	                AlarmItemList.add(alarmItem);
+	            } while (cursor.moveToNext());
+	        }
+        }catch (Exception e){
+        	Log.e("Database error","Go Delete your database");
         }
-        // return AlarmItem list
+	        // return AlarmItem list
         return AlarmItemList;
     }
 	public int updateAlarmItem(AlarmItem ai) {
@@ -151,6 +157,24 @@ public class AlarmDatabase extends SQLiteOpenHelper {
         cursor.close();
         // return count
         return cursor.getCount();
+    }
+    public AlarmItem getClosest(){
+    	String query = "SELECT * FROM " + TABLE_ALARMS + " ORDER BY " + KEY_TIME + " ASC";
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	Cursor cursor = db.rawQuery(query, null);
+    	AlarmItem ai  = null;
+    	if (cursor != null) {
+            cursor.moveToFirst();
+        
+            ai = new AlarmItem(Integer.parseInt(cursor.getString(0)),
+                cursor.getString(1), Integer.parseInt(cursor.getString(2)),cursor.getString(3),
+                Integer.parseInt(cursor.getString(4)),Integer.parseInt(cursor.getString(5)),
+                cursor.getString(6),Integer.parseInt(cursor.getString(7)),cursor.getString(8),
+                Integer.parseInt(cursor.getString(9)));
+        	Log.d("sql","got message");
+    	}
+    	if(ai==null) Log.e("sql", "no matches");
+        return ai;
     }
     
 }

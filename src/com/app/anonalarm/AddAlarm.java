@@ -1,7 +1,10 @@
 package com.app.anonalarm;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -16,6 +19,7 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,7 +38,8 @@ public class AddAlarm extends PreferenceActivity {
 		//save prefs
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		int currentTimestamp = (int)System.currentTimeMillis();
-		String time = prefs.getString("preferences_start_time","");
+		Calendar alarmtime = new GregorianCalendar();
+		long currTime=Calendar.getInstance().getTimeInMillis();
 		String repeat = prefs.getString("preferences_weekdays","");
 		int enable = prefs.getBoolean("preferences_enabled",true) ? 1:0;
 		int vibrate = prefs.getBoolean("preferences_vibrate",true) ? 1 :0;
@@ -42,11 +47,26 @@ public class AddAlarm extends PreferenceActivity {
 		String filter = prefs.getString("preferences_filter", "");
 		int snooze = prefs.getBoolean("preferences_snooze", true) ? 1:0;
 		String label = prefs.getString("preferences_label", "Alarm");
+		
+		/*try {
+			alarmtime.setTime(new SimpleDateFormat("EEE-kk:mm").parse(repeat+"-"+prefs.getString("preferences_start_time","")));
+		} catch (ParseException err) {
+			// TODO Auto-generated catch block
+			Log.e("Parse Failure","yeah",err);
+		}*/
 		DownloadSound sound = new DownloadSound();
 		sound.execute("");
-		String soundfile = sound.getFilename();
-		Toast.makeText(getApplicationContext(),Environment.getExternalStorageDirectory().getPath()+"/AnonAlarmData/",Toast.LENGTH_LONG).show();
-		AlarmItem ai = new AlarmItem(currentTimestamp, label,time,repeat,vibrate,volume,
+		String soundfile = null;
+		synchronized(sound) {
+			try {
+				sound.wait();
+			}
+			catch(InterruptedException iEx) {}
+			soundfile = sound.getFilename();
+		}
+		Log.d("sql", soundfile);
+		
+		AlarmItem ai = new AlarmItem(currentTimestamp, label,0,repeat,vibrate,volume,
 	    		filter,snooze,soundfile,enable);
 
         AlarmDatabase db = new AlarmDatabase(this);
@@ -55,22 +75,33 @@ public class AddAlarm extends PreferenceActivity {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("created",1);
         setResult(RESULT_OK,returnIntent);  
-        Calendar cur_cal = Calendar.getInstance();
-        cur_cal.setTimeInMillis(System.currentTimeMillis());//set the current time and date for this calendar
+        /*
+        Calendar cur_cal = new GregorianCalendar();
+        
+        Calendar timeOff = new GregorianCalendar();
+        //alarmtime.set(Calendar.YEAR, 2013);
+        timeOff.set(Calendar.DAY_OF_WEEK, alarmtime.get(Calendar.DAY_OF_WEEK));
+        timeOff.set(Calendar.HOUR_OF_DAY, alarmtime.get(Calendar.HOUR_OF_DAY));
+        timeOff.set(Calendar.MINUTE, alarmtime.get(Calendar.MINUTE));
+        timeOff.set(Calendar.SECOND, 0);
+        Calendar curr =  Calendar.getInstance();
+        if (timeOff.before(curr)){
+        	timeOff.add(Calendar.DAY_OF_WEEK, 7);
+        }*/
 
-        Calendar cal = new GregorianCalendar();
-        cal.add(Calendar.DAY_OF_YEAR, cur_cal.get(Calendar.DAY_OF_YEAR));
-        cal.set(Calendar.HOUR_OF_DAY, cur_cal.get(Calendar.HOUR_OF_DAY));
-        cal.set(Calendar.MINUTE, cur_cal.get(Calendar.MINUTE));
-        cal.set(Calendar.SECOND, cur_cal.get(Calendar.SECOND));
-        cal.set(Calendar.MILLISECOND, cur_cal.get(Calendar.MILLISECOND));
-        cal.set(Calendar.DATE, cur_cal.get(Calendar.DATE));
-        cal.set(Calendar.MONTH, cur_cal.get(Calendar.MONTH));
-
+		Log.d("alarmtimestring",alarmtime.getTime().getDay()+"");
+		Log.d("alarmtimestring",alarmtime.getTime().getDate()+"");
+		/*
+        Log.d("CUrr",(timeOff.getTimeInMillis()-curr.getTimeInMillis())+"");
+        Log.d("Alarm",timeOff.getTimeInMillis()+"");*/
+        
+		ai.setNextTime();
         Intent intent = new Intent(this, AlarmReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(this, 12345, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi = PendingIntent.getBroadcast(this, ai.getID(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
         AlarmManager alarm = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
-        alarm.set(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis()+1500, pi);
+        
+        //alarm.set(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis()+1500, pi);
+        alarm.set(AlarmManager.RTC_WAKEUP, ai.getTIME(), pi);
 		finish();
         
 	}

@@ -1,9 +1,13 @@
 package com.app.anonalarm;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 public class AlarmItem{
     private int ID;
     private String LABEL;
-    private String TIME;
+    private long TIME;
     private String REPEAT;
     private int VIBRATE;
     private int VOLUME;
@@ -12,7 +16,7 @@ public class AlarmItem{
     private String SOUND;
     private int ENABLE;
     
-    public AlarmItem(int id, String label, String time, String repeat, int vibrate, int volume,
+    public AlarmItem(int id, String label, long time, String repeat, int vibrate, int volume,
     		String filter, int snooze, String sound, int enable){
     	this.ID = id;
     	this.LABEL = label;
@@ -36,11 +40,11 @@ public class AlarmItem{
 		LABEL = lABEL;
 	}
 
-	public String getTIME() {
+	public long getTIME() {
 		return TIME;
 	}
 
-	public void setTIME(String tIME) {
+	public void setTIME(long tIME) {
 		TIME = tIME;
 	}
 
@@ -97,5 +101,40 @@ public class AlarmItem{
 	public void setENABLE(int eNABLE) {
 		ENABLE = eNABLE;
 	}
-    
+    public void setNextTime(){
+    	String[] days = this.REPEAT.split(",");
+    	long closest=0;
+    	Calendar timeOff = new GregorianCalendar();
+    	Calendar alarmtime = new GregorianCalendar();
+    	alarmtime.setTimeInMillis(this.TIME);
+    	for (int i = 0; i < days.length; i++){
+    		if (days[i].equals("Mon")){
+    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
+    		} else if (days[i].equals("Tue")){
+    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.TUESDAY);
+    		} else if (days[i].equals("Wed")){
+    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.WEDNESDAY);
+    		} else if (days[i].equals("Thu")){
+    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.THURSDAY);
+    		} else if (days[i].equals("Fri")){
+    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.FRIDAY);
+    		} else if (days[i].equals("Sat")){
+    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.SATURDAY);
+    		} else{
+    			alarmtime.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
+    		}
+	        //timeOff.set(Calendar.DAY_OF_WEEK, alarmtime.get(Calendar.DAY_OF_WEEK));
+	        timeOff.set(Calendar.HOUR_OF_DAY, alarmtime.get(Calendar.HOUR_OF_DAY));
+	        timeOff.set(Calendar.MINUTE, alarmtime.get(Calendar.MINUTE));
+	        timeOff.set(Calendar.SECOND, 0);
+	        Calendar curr =  Calendar.getInstance();
+	        if (timeOff.before(curr)){
+	        	timeOff.add(Calendar.DAY_OF_WEEK, 7);
+	        }
+	        if( i == 0 || closest > timeOff.getTimeInMillis()){
+	        	closest = timeOff.getTimeInMillis();
+	        }
+    	}
+    	TIME = closest;
+    }
 }
