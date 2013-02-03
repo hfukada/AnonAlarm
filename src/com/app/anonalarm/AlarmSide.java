@@ -28,8 +28,16 @@ public class AlarmSide extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//this.deleteDatabase("AnonAlarmData");
-		db = new AlarmDatabase(this);
+		
+		
+		try{
+			db = new AlarmDatabase(this);	
+		}catch(Exception e){
+				this.deleteDatabase("AnonAlarmData");
+				db = new AlarmDatabase(this);
+		}
+		
+		
 		
 		//db.onUpgrade(null, 0, 1);
 		/* First Tab Content */

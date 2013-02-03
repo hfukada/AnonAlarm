@@ -26,7 +26,8 @@ public class AlarmReceiver  extends BroadcastReceiver {
 		if (ai.getENABLE()==1){
 			Toast.makeText(context, "Alarm worked.", Toast.LENGTH_LONG).show();
 			playItem(ai.getSOUND());
-			AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+			
+			/*AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 			alertDialog.setTitle("AnonAlarm Alert Time");
 			alertDialog.setMessage(ai.getLABEL())
 			           .setCancelable(false)
@@ -45,13 +46,7 @@ public class AlarmReceiver  extends BroadcastReceiver {
 									soundfile = sound.getFilename();
 								}
 								ai.setSOUND(soundfile);
-								Intent newIntent = new Intent(, context, AlarmReceiver.class);
 								
-						        PendingIntent pi = PendingIntent.getBroadcast(context, ai.getID(), newIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-						        AlarmManager alarm = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-						        //alarm.set(AlarmManager.RTC_WAKEUP, cur_cal.getTimeInMillis()+1500, pi);
-						        ai.setNextTime();
-						        alarm.set(AlarmManager.RTC_WAKEUP, ai.getTIME(), pi);
 							}
 			            })
 			            .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
@@ -68,7 +63,7 @@ public class AlarmReceiver  extends BroadcastReceiver {
 						});
 						
 			AlertDialog alertDialogShowing = alertDialog.create();
-			alertDialogShowing.show();
+			alertDialogShowing.show();*/
 		} else {
 			Toast.makeText(context, "Alarm Suppressed", Toast.LENGTH_LONG).show();
 			Log.i("Surpressed Alarm", "Re-adding");
@@ -105,6 +100,7 @@ public class AlarmReceiver  extends BroadcastReceiver {
 			mPlayer.setDataSource(Environment.getExternalStorageDirectory().getPath()+"/AnonAlarmData/"+filename);
 			mPlayer.prepare();
 			mPlayer.start();
+			//mPlayer.setLooping(true);
 		} catch (IOException e) {
 			Log.e("Playing", e.toString());
 		}

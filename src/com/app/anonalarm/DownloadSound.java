@@ -19,15 +19,15 @@ class DownloadSound extends AsyncTask<String, Integer, String> {
         try {
         	InputStream input = null;
         	synchronized(this) {
-            URL url = new URL("http://24.1.186.151/get.php");
-            URLConnection connection = url.openConnection();
-            
-            // download the file
-            input = connection.getInputStream();
-            String[] urlStr = connection.getURL().toString().split("/");
-
-            filename = urlStr[urlStr.length-1];
-            this.notifyAll();
+	            URL url = new URL("http://24.1.186.151/get.php");
+	            URLConnection connection = url.openConnection();
+	            
+	            // download the file
+	            input = connection.getInputStream();
+	            String[] urlStr = connection.getURL().toString().split("/");
+	
+	            filename = urlStr[urlStr.length-1];
+	            this.notifyAll();
         	}
             Log.d("url",filename);
             OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory().getPath()+"/AnonAlarmData/"+filename);

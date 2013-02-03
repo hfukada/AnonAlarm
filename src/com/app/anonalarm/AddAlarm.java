@@ -76,7 +76,6 @@ public class AddAlarm extends PreferenceActivity {
         returnIntent.putExtra("created",1);
         setResult(RESULT_OK,returnIntent);  
         
-        Calendar cur_cal = new GregorianCalendar();
         
         Calendar timeOff = new GregorianCalendar();
         //alarmtime.set(Calendar.YEAR, 2013);
@@ -94,7 +93,7 @@ public class AddAlarm extends PreferenceActivity {
 		/*
         Log.d("CUrr",(timeOff.getTimeInMillis()-curr.getTimeInMillis())+"");
         Log.d("Alarm",timeOff.getTimeInMillis()+"");*/
-        
+        ai.setTIME(timeOff.getTimeInMillis());
 		//ai.setNextTime();
         Intent intent = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, ai.getID(), intent, PendingIntent.FLAG_CANCEL_CURRENT);

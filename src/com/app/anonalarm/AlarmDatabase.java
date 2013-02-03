@@ -35,13 +35,14 @@ public class AlarmDatabase extends SQLiteOpenHelper {
     private static final String KEY_ENABLE = "enable";
  
     public AlarmDatabase(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    	super(context, DATABASE_NAME, null, DATABASE_VERSION);
         
     }
  
     // Creating Tables
     @Override
     public void onCreate(SQLiteDatabase db) {
+
         String CREATE_ALARM_ITEMS_TABLE = "CREATE TABLE " + TABLE_ALARMS+ "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_LABEL + " TEXT,"
                 + KEY_TIME + " INTEGER," + KEY_REPEAT + " INTEGER,"+KEY_VIBRATE+" INTEGER, "
@@ -116,7 +117,9 @@ public class AlarmDatabase extends SQLiteOpenHelper {
 	            } while (cursor.moveToNext());
 	        }
         }catch (Exception e){
-        	Log.e("Database error","Go Delete your database");
+        	Log.e("Database error","Go Delete your database",e);
+        	
+        	
         }
 	        // return AlarmItem list
         return AlarmItemList;
@@ -173,6 +176,7 @@ public class AlarmDatabase extends SQLiteOpenHelper {
                 Integer.parseInt(cursor.getString(9)));
         	Log.d("sql","got message");
     	}
+    	cursor.close();
     	if(ai==null) Log.e("sql", "no matches");
         return ai;
     }
