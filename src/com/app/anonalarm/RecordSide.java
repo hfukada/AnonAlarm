@@ -201,12 +201,14 @@ public class RecordSide extends Activity{
 						}
 					});
 			    renameAlert.show();
+			    break;
 		   case R.id.upload_item:
 			   //temp.addAll((Collection<? extends String>)file.toString());
 			   AsyncUpload upload = new AsyncUpload();
 			   upload.setFilePath(filepath);
+			   upload.setContext(this);
 			   upload.execute("");
-			   Toast.makeText(getApplicationContext(), "Uploaded: "+listItem.toString(), Toast.LENGTH_SHORT).show();
+			   break;
 		}
 		return true;
 	}

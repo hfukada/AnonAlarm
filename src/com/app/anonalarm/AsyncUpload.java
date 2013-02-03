@@ -12,14 +12,24 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 public class AsyncUpload extends AsyncTask<String, Integer, String>{
 	private String filepath;
+	public String buf;
+	
 	void setFilePath(String filepath)
 	{
 		this.filepath = filepath;
+	}
+	
+	private Context context;
+	void setContext(Context context)
+	{
+		this.context = context;
 	}
 	
 	@Override
@@ -38,7 +48,7 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 		int bytesRead, bytesAvailable, bufferSize;
 		byte[] buffer;
 		int maxBufferSize = 1*1024*1024;
-
+		String temp ="";
 		try
 		{
 			FileInputStream fileInputStream = new FileInputStream(new File(pathToOurFile) );
@@ -101,9 +111,14 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 			Log.d("serverResponseMessage",serverResponseMessage);
 			InputStream in = connection.getInputStream();
 			Scanner sc = new Scanner(in);
+			
+			temp = "";
 			while (sc.hasNext()) {
-				Log.d("sc out",sc.nextLine());
+				temp=sc.nextLine();
 			}
+			String[] tempArr = filepath.split("\"");
+			
+
 			
 			Log.d("InputStream",in.toString());
 			DataInputStream inStream = new DataInputStream(in);
@@ -119,6 +134,17 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 			//Exception handling
 			}
 			
-		 return null;
+		 return temp;
 	}
+
+	@Override
+	protected void onPostExecute(String result) {
+		// TODO Auto-generated method stub
+		Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+	}
+	
+	//protected void onPostExecute(Long result){
+		
+	//}
+	
 }
