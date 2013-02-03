@@ -14,6 +14,7 @@ import java.util.Scanner;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 public class AsyncReport extends AsyncTask {
 	private String filepath;
@@ -96,7 +97,7 @@ public class AsyncReport extends AsyncTask {
 			Log.d("serverResponseMessage",serverResponseMessage);
 			InputStream in = connection.getInputStream();
 			Scanner sc = new Scanner(in);
-			while (sc.hasNext()) {
+			while (sc.hasNextLine()) {
 				Log.d("sc out",sc.nextLine());
 			}
 		
@@ -113,6 +114,7 @@ public class AsyncReport extends AsyncTask {
 			
 		 return null;
 	}
+
 	public static String md5(String input) {
 		try {
 		String result = input;

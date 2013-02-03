@@ -21,13 +21,14 @@ public class AlarmAlerter extends Activity{
 	AlarmDatabase db;
 	MediaPlayer mPlayer;
 	AlarmItem ai;
-	
+	Context ct;
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ct = this.getApplicationContext();
 		mainCode();
 	}
 	public void mainCode(){
-		AlarmDatabase db = new AlarmDatabase(this);
+		db = new AlarmDatabase(this);
 		ai = db.getClosest();
 		if (ai.getENABLE()==1){
 			Toast.makeText(this, "Alarm worked.", Toast.LENGTH_LONG).show();
@@ -39,7 +40,7 @@ public class AlarmAlerter extends Activity{
 			           .setPositiveButton("Snooze", new DialogInterface.OnClickListener() {
 			        	@Override
 						public void onClick(DialogInterface dialog, int which) {
-								ai.setTIME(ai.getTIME() + 4*1000*60);
+			        			Log.i("whichs",""+which);
 								DownloadSound sound = new DownloadSound();
 								sound.execute("");
 								String soundfile = null;
@@ -50,8 +51,20 @@ public class AlarmAlerter extends Activity{
 									catch(InterruptedException iEx) {}
 									soundfile = sound.getFilename();
 								}
+								if (mPlayer != null){
+									mPlayer.stop();
+									mPlayer.release();
+									mPlayer=null;
+								}
 								ai.setSOUND(soundfile);
-								reEnable(1);
+								Intent newIntent = new Intent(ct, AlarmReceiver.class);
+						        PendingIntent pi = PendingIntent.getBroadcast(ct, ai.getID(), newIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+						        
+						        AlarmManager alarm = (AlarmManager)(ct.getSystemService(Context.ALARM_SERVICE));
+						        
+								ai.setTIME(ai.getTIME()+1000*60*4);
+								db.updateAlarmItem(ai);
+								alarm.set(AlarmManager.RTC_WAKEUP, ai.getTIME(), pi);
 								dialog.cancel();
 								finish();
 							}
@@ -61,11 +74,32 @@ public class AlarmAlerter extends Activity{
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								// TODO Auto-generated method stub
+								Log.i("whichd",""+which);
+								ai.setNextTime();
+								DownloadSound sound = new DownloadSound();
+								sound.execute("");
+								String soundfile = null;
+								synchronized(sound) {
+									try {
+										sound.wait();
+									}
+									catch(InterruptedException iEx) {}
+									soundfile = sound.getFilename();
+								}
 								if (mPlayer != null){
 									mPlayer.stop();
 									mPlayer.release();
+									mPlayer=null;
 								}
-								reEnable(0);
+								ai.setSOUND(soundfile);
+								Intent newIntent = new Intent(ct, AlarmReceiver.class);
+						        PendingIntent pi = PendingIntent.getBroadcast(ct, ai.getID(), newIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+						        
+						        AlarmManager alarm = (AlarmManager)(ct.getSystemService(Context.ALARM_SERVICE));
+						        
+								ai.setNextTime();
+								db.updateAlarmItem(ai);
+								alarm.set(AlarmManager.RTC_WAKEUP, ai.getTIME(), pi);
 								dialog.cancel();
 								finish();
 							}
@@ -100,6 +134,7 @@ public class AlarmAlerter extends Activity{
 		} else {
 		    ai.setNextTime();
 		}
+		db.updateAlarmItem(ai);
 		alarm.set(AlarmManager.RTC_WAKEUP, ai.getTIME(), pi);
 	}
 	public void playItem(String filename){
@@ -111,6 +146,7 @@ public class AlarmAlerter extends Activity{
 				if (mPlayer != null && mPlayer.isPlaying()){
 					mPlayer.stop();
 					mPlayer.release();
+					mPlayer=null;
 				}
 			} 
 		};

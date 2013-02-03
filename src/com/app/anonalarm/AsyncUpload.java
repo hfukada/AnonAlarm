@@ -24,6 +24,7 @@ import android.os.AsyncTask;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class AsyncUpload extends AsyncTask<String, Integer, String>{
 	private String filepath;
@@ -35,6 +36,12 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 	void setUID(String uid)
 	{
 		this.uid = uid;
+	}
+	private String buf = "";
+	private Context context;
+    void setContext(Context context)
+	{
+		this.context = context;
 	}
 	
 	@Override
@@ -53,7 +60,7 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 		int bytesRead, bytesAvailable, bufferSize;
 		byte[] buffer;
 		int maxBufferSize = 1*1024*1024;
-
+		String temp = "";
 		try
 		{	
 			URL url = new URL(urlServer);
@@ -115,8 +122,10 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 			Log.d("serverResponseMessage",serverResponseMessage);
 			InputStream in = connection.getInputStream();
 			Scanner sc = new Scanner(in);
-			while (sc.hasNext()) {
-				Log.d("sc out",sc.nextLine());
+			temp = "";
+			while (sc.hasNextLine()) {
+				temp = sc.nextLine();
+				//Log.d("sc out",sc.nextLine());
 			}
 		
 			Log.d("InputStream",in.toString());
@@ -133,7 +142,11 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 			//Exception handling
 			}
 			
-		 return null;
+		 return temp;
+	}
+	@Override
+	protected void onPostExecute(String result) {
+		Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
 	}
 	public static String md5(String input) {
 		try {
@@ -153,4 +166,5 @@ public class AsyncUpload extends AsyncTask<String, Integer, String>{
 		return input;
 		}
 	}
+
 }

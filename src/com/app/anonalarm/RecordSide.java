@@ -207,13 +207,14 @@ public class RecordSide extends Activity{
 						}
 					});
 			    renameAlert.show();
+			    break;
 		   case R.id.upload_item:
 			   //temp.addAll((Collection<? extends String>)file.toString());
 			   AsyncUpload upload = new AsyncUpload();
 			   upload.setFilePath(filepath);
 			   upload.setUID(wInfo.getMacAddress());
+			   upload.setContext(this);
 			   upload.execute("");
-			   Toast.makeText(getApplicationContext(), "Uploaded: "+listItem.toString(), Toast.LENGTH_SHORT).show();
 			   break;
 		   case R.id.report_upload:
 			   AlertDialog.Builder reportAlert = new AlertDialog.Builder(this);
@@ -222,7 +223,9 @@ public class RecordSide extends Activity{
 			    final EditText reportInput = new EditText(this);
 			    reportAlert.setView(reportInput);
 			    final String fileName = filepath;
+			    final String temporary = new File(filepath).getName();
 			    final String macAddr= wInfo.getMacAddress();
+			    
 			    	reportAlert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 						
 						@Override
@@ -234,7 +237,7 @@ public class RecordSide extends Activity{
 							   Log.d("Click", "DialogClicked");
 							   report.setUserMessage(reportInput.getText().toString());
 							   report.execute("");
-							Toast.makeText(getApplicationContext(), "Your report is being submitted", Toast.LENGTH_SHORT).show();
+							   Toast.makeText(getApplicationContext(), "Renamed: "+listItem.toString()+" to "+temporary, Toast.LENGTH_SHORT).show();
 						}
 					})
 					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -251,7 +254,7 @@ public class RecordSide extends Activity{
 			   report.setUID(wInfo.getMacAddress());
 			   report.setUserMessage(reportInput.getText().toString());
 			   report.execute("");*/
-			   Toast.makeText(getApplicationContext(), "Report uploaded: "+listItem.toString(), Toast.LENGTH_SHORT).show();
+			   
 			   break;
 		}
 		return true;
@@ -522,4 +525,4 @@ public class RecordSide extends Activity{
 		listItems.add("AnonRecording"+num+".wav");
 		adapter.notifyDataSetChanged();
 	}
-}	
+}

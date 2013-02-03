@@ -3,9 +3,10 @@ package com.app.anonalarm;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,19 +29,8 @@ public class AlarmSide extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		
-		try{
-			db = new AlarmDatabase(this);
-	        items=db.getAllAlarmItems();
-		}catch(Exception e){
-			this.deleteDatabase("AnonAlarmData");
-			db = new AlarmDatabase(this);
-		}
-		
-		
-		
-		//db.onUpgrade(null, 0, 1);
+
+		db = new AlarmDatabase(this);
 		/* First Tab Content */
 		setContentView(R.layout.alarmside);
 		alarmlist = (ListView) findViewById(android.R.id.list);
@@ -50,27 +40,50 @@ public class AlarmSide extends ListActivity {
 			   @Override
 			   public void onItemClick(AdapterView<?> adapterView, View view, int position, long arg) {
 			      //Object listItem = alarmlist.getItemAtPosition(position);
-				   	AlarmItem ai = listItems.get(position);
-			        
-				   	Intent goToNextActivity = new Intent(getApplicationContext(), AddAlarm.class);
-				   	goToNextActivity.putExtra("pos", position);
-			        startActivityForResult(goToNextActivity, ALARM_RESULT);
+			      Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
+			      
 			   } 
 			});	
 		alarmlist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> adapterView, View arg1, int position, long arg3) {
 				// TODO Auto-generated method stub
-				AlarmItem ai = listItems.get(position);
-				Toast.makeText(getApplicationContext(), ai.getLABEL() + " was removed.", Toast.LENGTH_SHORT).show();
-				db.deleteAlarmItem(ai);
-				listItems.remove(position);
+				final AlarmItem ai = listItems.get(position);
+				
+				AlertDialog.Builder alertDialog = new AlertDialog.Builder(AlarmSide.this);
+				alertDialog.setTitle("Delete item");
+				alertDialog.setMessage("Are you sure you want to delete this item?")
+				           .setCancelable(false)
+				           .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+				        	@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+				        			db.deleteAlarmItem(ai);
+									listItems.remove(ai);
+									Toast.makeText(getApplicationContext(), "Deleted: "+ai.getLABEL(), Toast.LENGTH_SHORT).show();
+									adapter.notifyDataSetChanged();
+								}
+				            })
+				            .setNegativeButton("No", new DialogInterface.OnClickListener() {				
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									// TODO Auto-generated method stub
+									dialog.cancel();
+								}
+							});
+							
+				AlertDialog alertDialogShowing = alertDialog.create();
+				alertDialogShowing.show();
+
+
 				adapter.notifyDataSetChanged();
 				return true;
 			}
 		});
         adapter=new AlarmListAdapter(this,R.id.alarmlabel,listItems);
         setListAdapter(adapter);
+        items=db.getAllAlarmItems();
         for (int i = 0; i<items.size(); i++){
             listItems.add(items.get(i));
         }

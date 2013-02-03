@@ -1,5 +1,9 @@
 package com.app.anonalarm;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ArrayList;
 
 import android.content.Context;
@@ -36,7 +40,10 @@ public class AlarmListAdapter  extends ArrayAdapter<AlarmItem>{
             CheckBox bt = (CheckBox) v.findViewById(R.id.alarmEnable);
             TextView id = (TextView) v.findViewById(R.id.alarmid);
             if (tt != null) {
-            	tt.setText(ai.getLABEL());                            
+            	Timestamp ts = new Timestamp(ai.getTIME());
+            	SimpleDateFormat format = new SimpleDateFormat("EEE HH:mm");
+        		tt.setText(ai.getLABEL()+": "+ format.format(ts));
+				
             }
             if(bt != null){
             	bt.setChecked(ai.getENABLE() == 1? true : false);
