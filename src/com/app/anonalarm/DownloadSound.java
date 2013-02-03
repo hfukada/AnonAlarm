@@ -17,17 +17,20 @@ class DownloadSound extends AsyncTask<String, Integer, String> {
     protected String doInBackground(String... params) {
     	int timeint=0;
         try {
+        	InputStream input = null;
+        	synchronized(this) {
             URL url = new URL("http://24.1.186.151/get.php");
             URLConnection connection = url.openConnection();
-            connection.connect();
-            // this will be useful so that you can show a typical 0-100% progress bar
-            int fileLength = connection.getContentLength();
-
+            
             // download the file
-            timeint = (int)System.currentTimeMillis();
-            InputStream input = new BufferedInputStream(url.openStream());
-            Log.d("url",connection.getURL().toString());
-            OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory().getPath()+"/AnonAlarmData/"+ timeint +".mp3");
+            input = connection.getInputStream();
+            String[] urlStr = connection.getURL().toString().split("/");
+
+            filename = urlStr[urlStr.length-1];
+            this.notifyAll();
+        	}
+            Log.d("url",filename);
+            OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory().getPath()+"/AnonAlarmData/"+filename);
 
             byte data[] = new byte[1024];
             int count;
@@ -39,11 +42,12 @@ class DownloadSound extends AsyncTask<String, Integer, String> {
             output.flush();
             output.close();
             input.close();
+            
+        
         } catch (Exception e) {
         	Log.e("ST",e.getClass().getName(),e);
         	Log.d("Download", e.getMessage());
         }
-        filename = timeint+".mp3";
         return null;
     }
     public String getFilename(){
